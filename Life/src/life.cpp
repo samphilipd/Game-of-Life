@@ -24,7 +24,7 @@
  *---> cell with 2 neighbours is stable and contents will not change
  *---> cell with 3 neighbours will always contain a cell
  *---> cell with 4 or more neighbours will be empty
- *- All changes take place SIMULATANEOUSLY
+ *- All changes take place SIMULTANEOUSLY
  */
 
 #include <cctype>
@@ -40,13 +40,35 @@
 #include "simpio.h"
 using namespace std;
 
+/* Function prototypes */
+
+void printWelcomeMessage();
+
+/* Main Program */
+
 int main() {
     setConsoleSize(700, 400);
 
-
-    // TODO: Finish the program!
-
+    printWelcomeMessage();
 
     cout << "Have a nice Life!" << endl;
     return 0;
+}
+
+/*
+ *Function printWelcomeMessage();
+ *-------------------------------
+ *Prints a short message explaing the application and its rules to
+ *the user
+ */
+void printWelcomeMessage() {
+    cout << "Welcome to Sam's implementation of the CS106B Game of Life,"
+         << endl << "a simulation of the lifecycle of a bacteria colony."
+         << endl << "Cells (X) live and die by the following rules:"
+         << endl << "- A cell with 1 or fewer neighbours dies."
+         << endl << "- Locations with 2 neighbours remain stable."
+         << endl << "- Locations with 3 neighbours will create life"
+         << endl << "- A cell with 4 or more neighbours dies." << endl
+         << endl;
+
 }
