@@ -45,6 +45,7 @@ using namespace std;
 void printWelcomeMessage();
 void parseGridFile(Grid<bool> &currentGrid, string gridFileName);
 void printGrid(Grid<bool> &currentGrid);
+void advanceGeneration(Grid<bool> &currentGrid);
 
 /* Constants */
 
@@ -63,9 +64,9 @@ int main() {
     // grab input file from user
     string gridFileName = getLine("Grid input file name? ");
 
-
     parseGridFile(currentGrid, gridFileName);
     printGrid(currentGrid);
+    advanceGeneration(currentGrid);
 
     cout << "Have a nice Life!" << endl;
     return 0;
@@ -130,8 +131,8 @@ void parseGridFile(Grid<bool> &currentGrid, string gridFileName) {
 
 /*
  *Function printGrid();
- *------------------------------
- *Outputs contents of supplied grid to console
+ *---------------------
+ *Outputs contents of specified grid to console
  */
 void printGrid(Grid<bool> &currentGrid) {
     for (int i = 0; i < currentGrid.numRows(); i++) {
@@ -144,4 +145,79 @@ void printGrid(Grid<bool> &currentGrid) {
         }
         cout << endl;
     }
+}
+
+/*
+ *Function advanceGeneration();
+ *-----------------------------
+ *Advances current grid one step to the next generation
+ *
+ *Quick rule reminder:
+ *- A location's neighbours are any of the surrounding 8 cells
+ *- In the next generation:
+ *---> cell with 0 or 1 neighbours will be empty
+ *---> cell with 2 neighbours is stable and contents will not change
+ *---> cell with 3 neighbours will always contain a cell
+ *---> cell with 4 or more neighbours will be empty
+ *- All changes take place SIMULTANEOUSLY
+ */
+
+void advanceGeneration(Grid<bool> &currentGrid) {
+    // create temporary duplicate grid to hold next step
+    Grid<bool> nextGrid(currentGrid.numRows(), currentGrid.numCols());
+
+    // iterate through currentGrid and update relevant cell in nextGrid
+    // based on condition of neighbouring cells
+    for (int i = 0; i < currentGrid.numRows(); i++) {
+        for (int j = 0; j < currentGrid.numCols(); j++) {
+            int neighbours;
+            bool leftEdge = false;
+            bool topEdge = false;
+            bool rightEdge = false;
+            bool bottomEdge = false;
+
+            // set relevant boolean variables if we are on an edge/corner
+            if (i == 0) topEdge == true;
+            if (i == currentGrid.numRows() - 1) bottomEdge = true;
+            if (j == 0) leftEdge == true;
+            if (j == currentGrid.numCols() - 1) rightEdge = true;
+
+
+            // Check neighbours of cell in currentGrid.
+            // We rely on logic short-circuiting to avoid out
+            // of bounds exceptions in edge cases
+
+            // left neighbour
+            if (!leftEdge && currentGrid[i][j-1]) neighbours++;
+            // upper left neighbour
+            if (!(leftEdge || topEdge) && currentGrid[i-1][j-1]) neighbours++;
+            // upper neighbour
+            if (!topEdge && currentGrid[i-1][j]) neighbours++;
+            // upper right neighbour
+            if (!(rightEdge || topEdge) && currentGrid[i-1][j+1]) neighbours++;
+            // right neighbour
+            if (!rightEdge && currentGrid[i][j+1]) neighbours++;
+            // lower right neighbour
+            if (!(rightEdge || bottomEdge) && currentGrid[i+1][j+1]) neighbours++;
+            // lower neighbour
+            if (!bottomEdge && currentGrid[i+1][j]) neighbours++;
+            // lower left neighbour
+            if (!(bottomEdge | leftEdge) && currentGrid[i+1][j-1]) neighbours++;
+
+            // Update relevant cells in nextGrid
+            if (neighbours == 0 || neighbours == 1 || neighbours >= 4) {
+                // empty
+                nextGrid[i][j] = false;
+            } else if (neighbours == 2) {
+                // stable
+                nextGrid[i][j] = currentGrid[i][j];
+            } else if (neighbours == 3) {
+                // always contains a cell
+                nextGrid[i][j] = true;
+            }
+        }
+    }
+
+    // dump contents of nextGrid into currentGrid
+    currentGrid = nextGrid;
 }
