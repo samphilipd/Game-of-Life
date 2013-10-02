@@ -43,6 +43,7 @@ using namespace std;
 /* Function prototypes */
 
 void printWelcomeMessage();
+void parseGridFile(string gridFileName);
 
 /* Main Program */
 
@@ -50,6 +51,9 @@ int main() {
     setConsoleSize(700, 400);
 
     printWelcomeMessage();
+
+    string gridFileName = getLine("Grid input file name? ");
+    parseGridFile(gridFileName);
 
     cout << "Have a nice Life!" << endl;
     return 0;
@@ -71,4 +75,21 @@ void printWelcomeMessage() {
          << endl << "- A cell with 4 or more neighbours dies." << endl
          << endl;
 
+}
+
+/*
+ *Function printFileToConsole();
+ *------------------------------
+ *Takes an input filename and prints the contents to console
+ *
+ *@param gridFileName - the location of the grid file as a string
+ */
+void parseGridFile(string gridFileName) {
+    ifstream input;
+    input.open(gridFileName.c_str());
+    string line;
+    while (getline(input, line)) {
+        cout << line << endl;
+    }
+    input.close();
 }
