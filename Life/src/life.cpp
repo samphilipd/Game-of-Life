@@ -44,18 +44,28 @@ using namespace std;
 
 void printWelcomeMessage();
 void parseGridFile(Grid<bool> &currentGrid, string gridFileName);
+void printGrid(Grid<bool> &currentGrid);
+
+/* Constants */
+
+const char LIVE_CELL = 'X';
+const char DEAD_CELL = '-';
 
 /* Main Program */
 
 int main() {
     setConsoleSize(700, 400);
-
     printWelcomeMessage();
 
+    // initialise boolean Grid, 1 is a living cell, 0 is a dead cell
     Grid<bool> currentGrid;
 
+    // grab input file from user
     string gridFileName = getLine("Grid input file name? ");
+
+
     parseGridFile(currentGrid, gridFileName);
+    printGrid(currentGrid);
 
     cout << "Have a nice Life!" << endl;
     return 0;
@@ -80,14 +90,12 @@ void printWelcomeMessage() {
 }
 
 /*
- *Function printFileToConsole();
+ *Function parseGridFile();
  *------------------------------
- *Takes an input filename and prints the contents to console
+ *Takes an input filename for a life grid data file and parses it to
+ *the specified Grid
  *
- *@param &rows - reference parameter updated to be number of rows of the
- *grid
- *@param &columns - reference parameter updated to be number of columns
- *of the grid
+ *@param &currentGrid - reference to main currentGrid
  *@param gridFileName - the location of the grid file as a string
  */
 void parseGridFile(Grid<bool> &currentGrid, string gridFileName) {
@@ -102,12 +110,38 @@ void parseGridFile(Grid<bool> &currentGrid, string gridFileName) {
     int columns = atoi(line.c_str());
     currentGrid.resize(rows, columns);
 
-    cout << "rows = " << rows << endl;
-    cout << "cols = " << columns << endl;
+    //DEBUG
+    cerr << "rows = " << rows << endl;
+    cerr << "cols = " << columns << endl;
 
     // populate grid with file content
-    while (getline(input, line)) {
-        cout << line << endl;
+    for (int i = 0; i < rows; i++) {
+        getline(input, line);
+        for (int j = 0; j < line.length(); j++) {
+            if (line[j] == DEAD_CELL) {
+                currentGrid[i][j] = false;
+            } else if (line[j] == LIVE_CELL) {
+                currentGrid[i][j] = true;
+            }
+        }
     }
     input.close();
+}
+
+/*
+ *Function printGrid();
+ *------------------------------
+ *Outputs contents of supplied grid to console
+ */
+void printGrid(Grid<bool> &currentGrid) {
+    for (int i = 0; i < currentGrid.numRows(); i++) {
+        for (int j = 0; j < currentGrid.numCols(); j++) {
+            if (currentGrid[i][j]) {
+                cout << LIVE_CELL;
+            } else {
+                cout << DEAD_CELL;
+            }
+        }
+        cout << endl;
+    }
 }
