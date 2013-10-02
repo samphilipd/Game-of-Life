@@ -43,7 +43,7 @@ using namespace std;
 /* Function prototypes */
 
 void printWelcomeMessage();
-void parseGridFile(string gridFileName);
+void parseGridFile(Grid<bool> &currentGrid, string gridFileName);
 
 /* Main Program */
 
@@ -52,8 +52,10 @@ int main() {
 
     printWelcomeMessage();
 
+    Grid<bool> currentGrid;
+
     string gridFileName = getLine("Grid input file name? ");
-    parseGridFile(gridFileName);
+    parseGridFile(currentGrid, gridFileName);
 
     cout << "Have a nice Life!" << endl;
     return 0;
@@ -82,12 +84,28 @@ void printWelcomeMessage() {
  *------------------------------
  *Takes an input filename and prints the contents to console
  *
+ *@param &rows - reference parameter updated to be number of rows of the
+ *grid
+ *@param &columns - reference parameter updated to be number of columns
+ *of the grid
  *@param gridFileName - the location of the grid file as a string
  */
-void parseGridFile(string gridFileName) {
+void parseGridFile(Grid<bool> &currentGrid, string gridFileName) {
     ifstream input;
     input.open(gridFileName.c_str());
     string line;
+
+    // (re)size grid to match input file
+    getline(input, line);
+    int rows = atoi(line.c_str());
+    getline(input, line);
+    int columns = atoi(line.c_str());
+    currentGrid.resize(rows, columns);
+
+    cout << "rows = " << rows << endl;
+    cout << "cols = " << columns << endl;
+
+    // populate grid with file content
     while (getline(input, line)) {
         cout << line << endl;
     }
