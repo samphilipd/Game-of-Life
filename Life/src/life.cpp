@@ -66,7 +66,15 @@ int main() {
 
     parseGridFile(currentGrid, gridFileName);
     printGrid(currentGrid);
-    advanceGeneration(currentGrid);
+
+    // temporary test code
+    while (true) {
+        cerr << "Entering advanceGeneration loop..." << endl;
+        advanceGeneration(currentGrid);
+        pause(1000);
+        clearConsole();
+        printGrid(currentGrid);
+    }
 
     cout << "Have a nice Life!" << endl;
     return 0;
@@ -118,7 +126,7 @@ void parseGridFile(Grid<bool> &currentGrid, string gridFileName) {
     // populate grid with file content
     for (int i = 0; i < rows; i++) {
         getline(input, line);
-        for (int j = 0; j < line.length(); j++) {
+        for (int j = 0; j < (int) line.length(); j++) {
             if (line[j] == DEAD_CELL) {
                 currentGrid[i][j] = false;
             } else if (line[j] == LIVE_CELL) {
@@ -170,16 +178,19 @@ void advanceGeneration(Grid<bool> &currentGrid) {
     // based on condition of neighbouring cells
     for (int i = 0; i < currentGrid.numRows(); i++) {
         for (int j = 0; j < currentGrid.numCols(); j++) {
-            int neighbours;
+            int neighbours = 0;
             bool leftEdge = false;
             bool topEdge = false;
             bool rightEdge = false;
             bool bottomEdge = false;
 
+            //DEBUG
+            cerr << "Row " << i << ", col " << j << endl;
+
             // set relevant boolean variables if we are on an edge/corner
-            if (i == 0) topEdge == true;
+            if (i == 0) topEdge = true;
             if (i == currentGrid.numRows() - 1) bottomEdge = true;
-            if (j == 0) leftEdge == true;
+            if (j == 0) leftEdge = true;
             if (j == currentGrid.numCols() - 1) rightEdge = true;
 
 
@@ -188,21 +199,40 @@ void advanceGeneration(Grid<bool> &currentGrid) {
             // of bounds exceptions in edge cases
 
             // left neighbour
-            if (!leftEdge && currentGrid[i][j-1]) neighbours++;
+            if (!leftEdge && currentGrid[i][j-1]) {
+                neighbours++;
+            }
             // upper left neighbour
-            if (!(leftEdge || topEdge) && currentGrid[i-1][j-1]) neighbours++;
+            if (!(leftEdge || topEdge) && currentGrid[i-1][j-1]) {
+                neighbours++;
+            }
             // upper neighbour
-            if (!topEdge && currentGrid[i-1][j]) neighbours++;
+            if (!topEdge && currentGrid[i-1][j]) {
+                neighbours++;
+            }
             // upper right neighbour
-            if (!(rightEdge || topEdge) && currentGrid[i-1][j+1]) neighbours++;
+            if (!(rightEdge || topEdge) && currentGrid[i-1][j+1]) {
+                neighbours++;
+            }
             // right neighbour
-            if (!rightEdge && currentGrid[i][j+1]) neighbours++;
+            if (!rightEdge && currentGrid[i][j+1]) {
+                neighbours++;
+            }
             // lower right neighbour
-            if (!(rightEdge || bottomEdge) && currentGrid[i+1][j+1]) neighbours++;
+            if (!(rightEdge || bottomEdge) && currentGrid[i+1][j+1]) {
+                neighbours++;
+            }
             // lower neighbour
-            if (!bottomEdge && currentGrid[i+1][j]) neighbours++;
+            if (!bottomEdge && currentGrid[i+1][j]) {
+                neighbours++;
+            }
             // lower left neighbour
-            if (!(bottomEdge | leftEdge) && currentGrid[i+1][j-1]) neighbours++;
+            if (!(bottomEdge | leftEdge) && currentGrid[i+1][j-1]) {
+                neighbours++;
+            }
+
+            //DEBUG
+            cerr << "neighbours = " << neighbours << endl;
 
             // Update relevant cells in nextGrid
             if (neighbours == 0 || neighbours == 1 || neighbours >= 4) {
