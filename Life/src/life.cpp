@@ -46,11 +46,13 @@ void printWelcomeMessage();
 void parseGridFile(Grid<bool> &currentGrid, string gridFileName);
 void printGrid(Grid<bool> &currentGrid);
 void advanceGeneration(Grid<bool> &currentGrid);
+void animateGrid(int frames, Grid<bool> &currentGrid);
 
 /* Constants */
 
 const char LIVE_CELL = 'X';
 const char DEAD_CELL = '-';
+const int ANIMATION_DELAY = 100;
 
 /* Main Program */
 
@@ -67,13 +69,21 @@ int main() {
     parseGridFile(currentGrid, gridFileName);
     printGrid(currentGrid);
 
-    // temporary test code
+    // user interaction loop
     while (true) {
-        cerr << "Entering advanceGeneration loop..." << endl;
-        advanceGeneration(currentGrid);
-        pause(1000);
-        clearConsole();
-        printGrid(currentGrid);
+        string userInput = getLine("a)nimate, t)ick, q)uit? ");
+
+        if (userInput == "a") {
+            int frames = getInteger("How many frames? ");
+            animateGrid(frames, currentGrid);
+        } else if (userInput == "q") {
+            //quit
+            break;
+        } else {
+            //default behaviour is to tick
+            advanceGeneration(currentGrid);
+            printGrid(currentGrid);
+        }
     }
 
     cout << "Have a nice Life!" << endl;
@@ -156,6 +166,25 @@ void printGrid(Grid<bool> &currentGrid) {
 }
 
 /*
+ *Function animateGrid();
+ *-----------------------
+ *Animates and prints contents of grid for specified number of frames
+ *
+ *@param frames - total number of frames to advance
+ *@param &currentGrid - the Grid object to animate
+ *
+ */
+
+void animateGrid(int frames, Grid<bool> &currentGrid) {
+    for (int i = 0; i < frames; i++) {
+        clearConsole();
+        advanceGeneration(currentGrid);
+        printGrid(currentGrid);
+        pause(ANIMATION_DELAY);
+    }
+}
+
+/*
  *Function advanceGeneration();
  *-----------------------------
  *Advances current grid one step to the next generation
@@ -184,15 +213,11 @@ void advanceGeneration(Grid<bool> &currentGrid) {
             bool rightEdge = false;
             bool bottomEdge = false;
 
-            //DEBUG
-            cerr << "Row " << i << ", col " << j << endl;
-
             // set relevant boolean variables if we are on an edge/corner
             if (i == 0) topEdge = true;
             if (i == currentGrid.numRows() - 1) bottomEdge = true;
             if (j == 0) leftEdge = true;
             if (j == currentGrid.numCols() - 1) rightEdge = true;
-
 
             // Check neighbours of cell in currentGrid.
             // We rely on logic short-circuiting to avoid out
@@ -230,9 +255,6 @@ void advanceGeneration(Grid<bool> &currentGrid) {
             if (!(bottomEdge | leftEdge) && currentGrid[i+1][j-1]) {
                 neighbours++;
             }
-
-            //DEBUG
-            cerr << "neighbours = " << neighbours << endl;
 
             // Update relevant cells in nextGrid
             if (neighbours == 0 || neighbours == 1 || neighbours >= 4) {
